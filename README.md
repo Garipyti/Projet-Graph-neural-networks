@@ -1,43 +1,11 @@
 # Projet-Graph-neural-networks
-# Graph Neural Networks (GNNs): Property Prediction on the ZINC Dataset
-
-**Difficulty**: medium
 
 ## Overview
 
 This project is an exploration of **Graph Neural Networks (GNNs)**, a specialized class of deep learning models designed to operate on non-Euclidean data structures (graphs). The project aims to cover the fundamental concepts of graph theory, GNN mechanics, and their application to a real-world problem: predicting molecular properties using the **ZINC chemical compounds dataset** via the **PyTorch Geometric** library.
 
-## Objectives
+A molecule is constituted of different atoms, bounded by a phenomenon called covalent bonds. This phenomenon comes from atoms sharing electrons. Mathematically, one can represent a molecule via a graph, by considering atoms as vertices and their covalent bonds as edges. This is precisely what is done in the ZINC database. Each observation consists of an ordinated list of atoms identified by their atomic number, paired with an adjacency matrix describing the existing covalent bonds between the different atoms. The atomic numbers are the feature and the adjacency matrix describes the topology of our graph. The predicted continuous variable logP, or octanol-water partition coefficient, is a measure of how hydrophilic or hydrophobic a molecule is (per https://www.biotage.com/blog/what-is-the-role-of-logp-in-sample-prep-methods). 
 
-1. **Grasp and Document Graph Fundamentals:**
-  * Explain the concept of a **graph** mathematically, including the roles of **nodes (vertices)** and **edges**.
-  * Introduce GNNs, detailing how their operation differs from traditional neural networks (e.g., CNNs or MLPs) and their key applications.
+To perform predictions, we train a rudimentary Graph Neural Network, constituted of two layers of Graph Isomorphism Network and one layer of Global Mean pooling. The final layer is, as is usual for Convolution Neural Networks, constituted of a standard fully connected layer, outputting logP predictions. ReLU is used after each convolution as an activation function. The training is done with 100 epochs, using the Mean absolute error loss which is standard on ZINC. 
 
-2. **Explain Graph Operations:**
-  * Detail **Graph Convolution**, explaining how it generalizes the concept of convolution from a grid (image) to an irregular graph structure (message passing).
-  * Detail **Graph Pooling** (e.g., global or hierarchical pooling) and its importance for summarizing graph-level features while reducing complexity.
-
-3. **PyTorch Geometric Implementation on ZINC:**
-  * Utilize the **PyTorch Geometric** library to construct and train a GNN model on the **ZINC dataset**.
-  * Design a network architecture suitable for the task of chemical property prediction (a regression task on ZINC).
-
-4. **Performance Evaluation:**
-  * Evaluate the GNN model's predictive accuracy on the test set, using appropriate metrics for the regression task (e.g., Mean Absolute Error or Root Mean Squared Error).
-
-5. **Advanced Exploration (Optional):**
-  * Implement a **Graph Transformer** model from scratch, referencing the provided research paper.
-  * Compare the performance, computational characteristics, and architectural differences of the Graph Transformer model against the standard GNN model.
-
-## Expected Deliverables
-
-1. **Codebase:** Complete, well-documented Python code for the GNN model using PyTorch Geometric and the ZINC dataset. Include the optional implementation of a Graph Transformer model, if completed.
-2. Documentation:
-  - `README.md`: A summary of the project’s objectives, methodology, and outcomes.
-  - `REPORT.md`: A detailed report explaining the theoretical aspects of VAEs, the mathematical foundation of ELBO, and practical applications.
-
-## Resources and References
-
-* **Graph Transformer Paper:** https://proceedings.neurips.cc/paper_files/paper/2019/file/9d63484abb477c97640154d40595a3bb-Paper.pdf
-* **ZINC Dataset Documentation (PyG):** https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.datasets.ZINC.html
-* **PyTorch Geometric GitHub:** https://github.com/pyg-team/pytorch_geometric
-* **Review on Graph Neural Networks:** https://arxiv.org/pdf/1812.08434.pdf
+After 100 epochs, the model achieves a MAE of 0.6655 on the test dataset. For reference, the variable logP has values comprised in [-62.138;4.519], with an average of 0 and a standard deviation of 2.049 on the training set. This score exceeds our expectations, as the model is kept simple and the number of epochs low in order to keep computing time reasonable. The pooling module would be the one thing to refine further in order to get better results, as global mean pooling does not take into account connexions between vertices, missing potentialy crucial information in the process.
